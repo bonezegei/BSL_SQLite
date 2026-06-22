@@ -1,0 +1,78 @@
+
+/*
+    Bonezegei Scripting Language (BSL) - SQLite CRUD Example
+    Author: Jofel Batutay (Bonezegei)
+    Date: June 22, 2026
+*/
+
+loadNative("lib/sqlite.bzg", "webviewMgr");
+
+// 1. OPEN DATABASE
+// sqliteOpen is registered as a global function returning the DB object
+var db = sqliteOpen("app.db");
+
+if (db == null) {
+    print("Error: Could not open database.");
+}
+
+// 2. CREATE TABLE
+// Define the table structure. We can safely use VARCHAR and typical SQL constraints.
+print("Creating 'Users' table if it doesn't exist...");
+db.exec("CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(100), email VARCHAR(100));");
+
+
+// 3. CREATE (INSERT)
+// Insert mock data into our new table
+print("Inserting user records (Create)...");
+db.exec("INSERT INTO Users (name, email) VALUES ('Alice Smith', 'alice@example.com');");
+db.exec("INSERT INTO Users (name, email) VALUES ('Bob Jones', 'bob@example.com');");
+db.exec("INSERT INTO Users (name, email) VALUES ('Charlie Brown', 'charlie@example.com');");
+
+
+// 4. READ (SELECT) & SCHEMA INSPECTION
+// Inspect database schema first using our custom schema method
+print("Inspecting table schema:");
+var schema = db.schema("Users");
+// Loop through and display columns (using BSL sizeof() function)
+for (var i = 0; i < sizeof(schema); i = i + 1) {
+    var col = schema[i];
+    print("Column: " + col.name + " | Type: " + col.type + " | PrimaryKey: " + col.pk);
+}
+
+// Fetch and print all active users
+print("Querying active users (Read):");
+var users = db.query("SELECT * FROM Users;");
+for (var i = 0; i < sizeof(users); i = i + 1) {
+    var user = users[i];
+    print("ID: " + user.id + " | Name: " + user.name + " | Email: " + user.email);
+}
+
+
+// 5. UPDATE
+// Update Alice's email address
+print("Updating Alice's email (Update)...");
+db.query("UPDATE Users SET email = 'alice.smith@newdomain.com' WHERE name = 'Alice Smith';");
+
+// Query again to verify the update took place
+print("Verifying updated record:");
+var updatedUsers = db.query("SELECT * FROM Users WHERE name = 'Alice Smith';");
+if (sizeof(updatedUsers) > 0) {
+    var alice = updatedUsers[0];
+    print("Updated Alice -> ID: " + alice.id + " | Email: " + alice.email);
+}
+
+
+// 6. DELETE
+// Delete Bob from our database
+print("Deleting Bob Jones (Delete)...");
+db.exec("DELETE FROM Users WHERE name = 'Bob Jones';");
+
+// Query database once more to print final active users list
+print("Final Active Users List:");
+var finalUsers = db.query("SELECT * FROM Users;");
+for (var i = 0; i < sizeof(finalUsers); i = i + 1) {
+    var user = finalUsers[i];
+    print("ID: " + user.id + " | Name: " + user.name + " | Email: " + user.email);
+}
+
+print("--- CRUD Operations Completed Successfully ---");
