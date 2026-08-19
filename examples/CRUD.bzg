@@ -3,9 +3,10 @@
     Bonezegei Scripting Language (BSL) - SQLite CRUD Example
     Author: Jofel Batutay (Bonezegei)
     Date: June 22, 2026
+    Last Update: August 19, 2026
 */
 
-loadNative("lib/sqlite.bzg", "webviewMgr");
+include("lib/sqlite.bzg");
 
 // 1. OPEN DATABASE
 // sqliteOpen is registered as a global function returning the DB object
