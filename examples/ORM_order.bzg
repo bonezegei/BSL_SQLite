@@ -1,0 +1,127 @@
+/*
+    SQLite ORM Order
+    Author: Jofel Batutay (Bonezegei)
+    Date: August 19, 2026
+*/
+
+include("lib/sqlite.bzg");
+// 1. OPEN DATABASE
+// Returns database handle object
+var db = sqliteOpen("app.db");
+
+// 2. INITIALIZE ORM MODEL & DEFINE SCHEMA
+print("Defining schema and creating 'Users' table via ORM...");
+var Users = db.model("Users");
+
+// Dynamic ORM Schema Creation (Auto-includes 'id INTEGER PRIMARY KEY AUTOINCREMENT')
+Users.createTable({
+    name: "VARCHAR(100)",
+    email: "VARCHAR(100)"
+});
+
+// 3. LIST ALL TABLES IN DATABASE
+print("Listing all tables in database:");
+var tables = db.tables();
+if (tables) {
+    for (var i = 0; i < sizeof(tables); i = i + 1) {
+        var t = tables[i];
+        print(" -> Table found: " + t.name);
+    }
+}
+
+// 4. CREATE (INSERT via ORM)
+print("Inserting sample user records via ORM...");
+var aliceId = Users.insert({
+    name: "Alice Smith",
+    email: "alice@example.com"
+});
+
+var bobId = Users.insert({
+    name: "Bob Jones",
+    email: "bob@example.com"
+});
+
+var charlieId = Users.insert({
+    name: "Charlie Brown",
+    email: "charlie@example.com"
+});
+
+print("Inserted Records - Alice ID: " + aliceId + " | Bob ID: " + bobId + " | Charlie ID: " + charlieId);
+
+// 5. READ - Single Record by Primary Key (.find())
+print("Finding single record by ID (ORM .find()):");
+var alice = Users.find(aliceId);
+if (alice) {
+    print("Found Record -> Name: " + alice.name + " | Email: " + alice.email);
+}
+
+// 6. MEMORY-EFFICIENT PAGINATION & BATCH PROCESSING (.limit() & .count())
+print("--- Memory Efficient Pagination Example ---");
+
+// Get total record count without loading any rows into RAM
+var totalRows = Users.count();
+print("Total rows in database: " + totalRows);
+
+// Fetch records in small batches (e.g. 2 rows per page)
+var pageSize = 2;
+for (var offset = 0; offset < totalRows; offset = offset + pageSize) {
+    print("Fetching batch (LIMIT " + pageSize + " OFFSET " + offset + "):");
+    var page = Users.limit(pageSize, offset);
+    
+    for (var j = 0; j < sizeof(page); j = j + 1) {
+        var u = page[j];
+        print(" -> [ID " + u.id + "] " + u.name);
+    }
+}
+
+// 7. ORDERING EXAMPLES (.orderBy())
+print("--- Sorting Results with ORM (.orderBy()) ---");
+
+// Order by name ascending
+print("Users ordered by name (ASC):");
+var ascUsers = Users.orderBy("name", "ASC");
+for (var i = 0; i < sizeof(ascUsers); i = i + 1) {
+    var u = ascUsers[i];
+    print(" -> ID: " + u.id + " | Name: " + u.name);
+}
+
+// Order by ID descending with limit and offset (Sorted Pagination)
+print("Latest 2 Users ordered by ID (DESC):");
+var descUsers = Users.orderBy("id", "DESC", 2, 0);
+for (var i = 0; i < sizeof(descUsers); i = i + 1) {
+    var u = descUsers[i];
+    print(" -> ID: " + u.id + " | Name: " + u.name);
+}
+
+// 8. QUERY WITH FILTER CONDITION (.where())
+print("Querying with SQL condition (ORM .where()):");
+var filteredUsers = Users.where("name = 'Alice Smith'");
+for (var i = 0; i < sizeof(filteredUsers); i = i + 1) {
+    var u = filteredUsers[i];
+    print("Filtered Match -> ID: " + u.id + " | Name: " + u.name);
+}
+
+// 9. UPDATE RECORD
+print("Updating Alice's email (Update)...");
+db.exec("UPDATE Users SET email = 'alice.smith@newdomain.com' WHERE id = " + aliceId + ";");
+
+// Verify update
+print("Verifying updated record:");
+var updatedAlice = Users.find(aliceId);
+if (updatedAlice) {
+    print("Updated Alice -> ID: " + updatedAlice.id + " | Email: " + updatedAlice.email);
+}
+
+// 10. DELETE RECORD VIA ORM (.delete())
+print("Deleting Bob Jones by ID (ORM .delete()):");
+Users.delete(bobId);
+
+// 11. PRINT FINAL ACTIVE USERS
+print("Final Active Users List:");
+var finalUsers = Users.all();
+for (var i = 0; i < sizeof(finalUsers); i = i + 1) {
+    var user = finalUsers[i];
+    print("ID: " + user.id + " | Name: " + user.name + " | Email: " + user.email);
+}
+
+print("--- ORM CRUD Operations Completed Successfully ---");
