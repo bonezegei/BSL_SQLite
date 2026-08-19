@@ -4,6 +4,8 @@
     Date: August 19, 2026
 */
 
+include("lib/sqlite.bzg");
+
 // 1. OPEN DATABASE
 // Pass optional second parameter `1` if you want it to return null when DB doesn't exist on disk
 var db = sqliteOpen("app.db");
