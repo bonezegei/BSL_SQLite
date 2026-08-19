@@ -1,0 +1,21 @@
+/*
+    SQLite Get Table
+    Author: Jofel Batutay (Bonezegei)
+    Date: August 19, 2026
+*/
+
+// 1. OPEN DATABASE
+// Pass optional second parameter `1` if you want it to return null when DB doesn't exist on disk
+var db = sqliteOpen("app.db");
+
+// using the table function
+var tables = db.tables();
+for (var i = 0; i < sizeof(tables); i = i + 1) {
+    print("Table name: " + tables[i].name);
+}
+
+// using the query 
+var tables = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';");
+for (var i = 0; i < sizeof(tables); i = i + 1) {
+    print("Table name: " + tables[i].name);
+}
