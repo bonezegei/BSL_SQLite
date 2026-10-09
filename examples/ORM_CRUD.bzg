@@ -8,7 +8,7 @@ include("lib/sqlite.bzg");
 
 
 // 1. OPEN DATABASE
-var db = sqliteOpen("app.db");
+var db = sqlite("app.db");
 
 /* STREAMING_CHUNK:Define schema and create table */
 // 2. INITIALIZE ORM MODEL & DEFINE SCHEMA

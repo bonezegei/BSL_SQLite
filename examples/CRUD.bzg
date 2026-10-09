@@ -9,8 +9,8 @@
 include("lib/sqlite.bzg");
 
 // 1. OPEN DATABASE
-// sqliteOpen is registered as a global function returning the DB object
-var db = sqliteOpen("app.db");
+// sqlite is registered as a global function returning the DB object
+var db = sqlite("app.db");
 
 if (db == null) {
     print("Error: Could not open database.");

@@ -7,7 +7,7 @@
 include("lib/sqlite.bzg");
 // 1. OPEN DATABASE
 // Returns database handle object
-var db = sqliteOpen("app.db");
+var db = sqlite("app.db");
 
 // 2. INITIALIZE ORM MODEL & DEFINE SCHEMA
 print("Defining schema and creating 'Users' table via ORM...");
