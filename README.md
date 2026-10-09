@@ -61,7 +61,7 @@ This example demonstrates traditional SQL execution using raw queries:
 include("lib/sqlite.bzg");
 
 // 1. Open Database
-var db = sqliteOpen("app.db");
+var db = sqlite("app.db");
 if (db == null) {
     print("Error: Could not open database.");
 }
@@ -109,7 +109,7 @@ This example uses the built-in ORM to define schemas, execute CRUD operations, f
 include("lib/sqlite.bzg");
 
 // 1. Open Database & Initialize ORM Model
-var db = sqliteOpen("app.db");
+var db = sqlite("app.db");
 var Users = db.model("Users");
 
 // 2. Dynamic Schema Creation (Auto-includes 'id' primary key)
@@ -178,7 +178,7 @@ var finalUsers = Users.all();
 
 | Function / Method | Return Value | Description |
 | :--- | :--- | :--- |
-| `sqliteOpen(filename)` | `Object` / `null` | Opens or creates a SQLite database file and returns a handle. |
+| `sqlite(filename)` | `Object` / `null` | Opens or creates a SQLite database file and returns a handle. |
 | `db.exec(sql_string)` | `int` | Executes non-query SQL statements (`CREATE`, `INSERT`, `UPDATE`, `DELETE`). |
 | `db.query(sql_string)` | `Array[Object]` | Executes a `SELECT` statement and returns an array of row objects. |
 | `db.schema(table_name)` | `Array[Object]` | Returns metadata for table columns (`name`, `type`, `pk`). |
